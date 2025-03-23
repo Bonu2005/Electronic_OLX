@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { TypesKey } from 'src/decorators/role.decorators';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class RoleGuard implements CanActivate {
   constructor(private reflector:Reflector){}
   canActivate(
     context: ExecutionContext,

@@ -42,4 +42,16 @@ export class LikeService {
      return {error}
     }
   }
+  async myLikes(req:Request) {
+    try {
+      let {id}= req['user']
+      let find = await this.prisma.like.findMany({where:{id}})
+      if(!find){
+         throw new NotFoundException('No data')
+      }
+      return find
+    } catch (error) {
+     return {error}
+    }
+  }
 }

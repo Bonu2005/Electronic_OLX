@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -15,17 +15,41 @@ export class ProductService {
      }
    }
  
-  async findAll() {
-     try {
-       let find = await this.prisma.product.findMany()
-       if(find.length==0){
-        throw new NotFoundException('No data')
-       }
-       return find
-     } catch (error) {
-         return error
-     }
-   }
+   async findAll(
+    page?: string,
+    pageSize?: string,
+    order: 'ASC' | 'DESC' = 'ASC', 
+    orderBy: string = 'id',
+  ) {
+    try {
+      const pageNum = Number(page) || 1;
+      const take = Number(pageSize) || 10;
+      const skip = (pageNum - 1) * take;
+
+     
+      if (order !== 'ASC' && order !== 'DESC') {
+        throw new BadRequestException('Invalid order parameter. Use "asc" or "desc".');
+      }
+      const validOrderByFields = ['colorId', 'name', 'price', 'createdAt']; 
+      if (!validOrderByFields.includes(orderBy)) {
+        throw new BadRequestException(`Invalid orderBy parameter. Use one of: ${validOrderByFields.join(', ')}`);
+      }
+      const products = await this.prisma.product.findMany({
+        skip,
+        take,
+        orderBy: { [orderBy]: order },
+        where:{isConfirm:"ACTIVE"}
+      });
+
+      if (products.length === 0) {
+        throw new NotFoundException('No data');
+      }
+
+      return products;
+    } catch (error) {
+      throw error; 
+    }
+  }
  
   async findOne(id: string) {
      try {

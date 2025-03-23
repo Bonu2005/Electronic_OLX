@@ -23,13 +23,6 @@ export class ViewController {
     return this.viewService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateViewDto: UpdateViewDto) {
-    return this.viewService.update(id, updateViewDto);
-  }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.viewService.remove(id);
-  }
+
 }

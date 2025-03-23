@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateViewDto } from './dto/create-view.dto';
-import { UpdateViewDto } from './dto/update-view.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Request } from 'express';
 
@@ -38,29 +37,5 @@ export class ViewService {
      }
   }
 
- async update(id: string, updateViewDto: UpdateViewDto) {
-    try {
-      let find = await this.prisma.view.findUnique({where:{id}})
-      if(!find){
-       throw new NotFoundException('No data')
-      }
-      let updated = await this.prisma.view.update({where:{id},data:updateViewDto})
-      return updated
-     } catch (error) {
-      return {error}
-     }
-  }
 
-  async remove(id: string) {
- try {
-      let find = await this.prisma.view.findUnique({where:{id}})
-      if(!find){
-        throw new NotFoundException('No data')
-      }
-      let updated = await this.prisma.view.delete({where:{id}})
-      return updated
-     } catch (error) {
-      return {error}
-     }
-  }
 }

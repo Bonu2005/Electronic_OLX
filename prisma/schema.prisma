@@ -31,8 +31,10 @@ enum PrConfirm {
 }
 
 enum CtType {
-  Electronics
   Accessories
+  Laptops
+  Phone
+  Electronics
 }
 
 model Region {

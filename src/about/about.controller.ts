@@ -12,23 +12,19 @@ export class AboutController {
     return this.aboutService.create(createAboutDto);
   }
 
-  @Get()
-  findAll() {
-    return this.aboutService.findAll();
-  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.aboutService.findOne(+id);
+    return this.aboutService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAboutDto: UpdateAboutDto) {
-    return this.aboutService.update(+id, updateAboutDto);
+    return this.aboutService.update(id, updateAboutDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.aboutService.remove(+id);
+    return this.aboutService.remove(id);
   }
 }
