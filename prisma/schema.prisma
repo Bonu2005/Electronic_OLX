@@ -1,0 +1,188 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserType {
+  USER
+  SUPERADMIN
+  ADMIN
+}
+
+enum PrStatus {
+  OLD
+  NEW
+}
+
+enum PrConfirm {
+  PENDING
+  ACTIVE
+  DECLARED
+}
+
+enum CtType {
+  Electronics
+  Accessories
+}
+
+model Region {
+  id     String @id @default(uuid())
+  nameUz String
+  nameRu String
+  User   User[]
+}
+
+model Color {
+  id      String    @id @default(uuid())
+  nameUz  String
+  nameRu  String
+  Product Product[]
+}
+
+model Category {
+  id      String    @id @default(uuid())
+  nameUz  String
+  nameRu  String
+  type    CtType
+  Product Product[]
+}
+
+model User {
+  id        String     @id @default(uuid())
+  name      String
+  email     String     @unique
+  password  String
+  regionId  String
+  region    Region     @relation(fields: [regionId], references: [id])
+  phone     String     @unique
+  image     String
+  type      UserType
+  Comments  Comments[]
+  View      View[]
+  Order     Order[]
+  Like      Like[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  sentTalks     Talk[]    @relation(name: "TalkFromUser")
+  receivedTalks Talk[]    @relation(name: "TalkToUser")
+  Session       Session[]
+}
+
+model Product {
+  id           String     @id @default(uuid())
+  nameUz       String
+  nameRu       String
+  price        Float
+  colorId      String
+  color        Color      @relation(fields: [colorId], references: [id])
+  description  String
+  prStatus     PrStatus
+  location     String
+  isNegotiable Boolean
+  count        Int
+  categoryId   String
+  category     Category   @relation(fields: [categoryId], references: [id])
+  image        String
+  discount     Int
+  viewCount    Int        @default(0)
+  isConfirm    PrConfirm  @default(PENDING)
+  Comments     Comments[]
+  View         View[]
+  Order        Order[]
+  Talk         Talk[]
+  Like         Like[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Comments {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  message   String
+  star      Int
+  createdAt DateTime @default(now())
+}
+
+model View {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  date      DateTime @default(now())
+}
+
+model Order {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  count     Int
+  date      DateTime @default(now())
+  status    String   @default("PENDING")
+}
+
+model Talk {
+  id         String @id @default(uuid())
+  fromUserId String
+  fromUser   User   @relation(fields: [fromUserId], references: [id], name: "TalkFromUser")
+
+  toUserId String
+  toUser   User   @relation(fields: [toUserId], references: [id], name: "TalkToUser")
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model About {
+  id            String   @id @default(uuid())
+  siteName      String
+  siteUrl       String
+  description   String
+  privacyPolice String
+  email         String
+  phoneNumber   String
+  tg_link       String
+  youTube_link  String
+  insta_link    String
+  supportEmail  String
+  supportPhone  String
+  logo          String
+  createdAt     DateTime @default(now())
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ipAddress String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
