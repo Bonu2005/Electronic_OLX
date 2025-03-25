@@ -1,26 +1,65 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Request } from 'express';
+import { NotificationGateway } from 'src/notification/notification.gateway';
 
 @Injectable()
 export class OrderService {
-  create(createOrderDto: CreateOrderDto) {
-    return 'This action adds a new order';
+  constructor(private prisma:PrismaService,private notification:NotificationGateway){}
+ async create(createOrderDto: CreateOrderDto,req:Request) {
+   try {
+    let {id}= req["user"]
+    let created = await this.prisma.order.create({data:{...createOrderDto,userId:id}})
+    
+    this.notification.sendOrderNotif(created)
+
+    return created
+   } catch (error) {
+    return {error}
+   }
   }
 
-  findAll() {
-    return `This action returns all order`;
+ async findAll() {
+  try {
+    return await  this.prisma.order.findMany()
+  } catch (error) {
+    return {error}
+  }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+ async findOne(id: string) {
+    try {
+      return await  this.prisma.order.findUnique({where:{id}})
+    } catch (error) {
+      return {error}
+    }
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+ async update(id: string, updateOrderDto: UpdateOrderDto) {
+    try {
+    let find= await  this.prisma.order.findUnique({where:{id}})
+    if(!find){
+      return {message:"No data"}
+    }
+    let updated= await this.prisma.order.update({where:{id},data:updateOrderDto})
+    return updated
+    } catch (error) {
+      return {error}
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+ async remove(id: string) {
+    try {
+      let find= await  this.prisma.order.findUnique({where:{id}})
+      if(!find){
+        return {message:"No data"}
+      }
+      let removed= await this.prisma.order.delete({where:{id}})
+      return removed
+      } catch (error) {
+        return {error}
+      }
   }
 }

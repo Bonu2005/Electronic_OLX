@@ -16,11 +16,12 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { MailModule } from './mail/mail.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { NotificationGateway } from './notification/notification.gateway';
 
 @Module({
   imports: [RegionModule, ColorModule, CategoryModule, UserModule, ProductModule, CommentsModule, ViewModule, OrderModule, LikeModule, AboutModule, SessionModule, AuthModule, PrismaModule, MailModule,JwtModule.register({global:true})],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, NotificationGateway],
   exports:[JwtModule]
 })
 export class AppModule {}

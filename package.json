@@ -25,6 +25,8 @@
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/platform-socket.io": "^11.0.12",
+    "@nestjs/websockets": "^11.0.12",
     "@prisma/client": "^6.5.0",
     "bcrypt": "^5.1.1",
     "nodemailer": "^6.10.0",
